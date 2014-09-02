@@ -1,0 +1,186 @@
+// The following code holds examples of the following
+// programming concepts:
+//	1. Abstraction
+//	2. Interfaces
+//	3. Delegation
+//	4. Wrappers
+//	5. Shadowing
+//	6. Casting within a class hierarchy
+
+/*
+ The driver class Army demonstrates most of the concepts that I have described. Especially the use of
+ decorators, and collection classes.
+*/
+
+public class Army {
+
+	public static void main( String[] args ) {
+		
+		private Human[] army = new Human[10];	 //An example of casting and how an object type higher in the hierarchy
+												// can be used to allow 
+		for( int i = 0 ; i < 9 ; i++ ) {
+			army[i] = new Soldier();
+		}
+		
+		Human hum = new Soldier(); 		//Example of implicit casting. hum's type is Human AND Soldier.
+		Soldier sold = (Soldier)hum; 	// Example of explicit casting. We are telling the compiler here that we will
+		sold = new Soldier();			// assign a Soldier to sold by runtime.
+		army[9] = sold;
+	
+		System.out.println("Unit: " + army[4].getDescription());
+		System.out.println("Armor: " + army[4].getArmor());
+		System.out.println("Damage: "  + army[4].getDamage());
+		
+		army[4] = new Shield(army[4]);
+		army[4] = new Sword(army[4]);
+		
+		System.out.println("Unit: " + army[4].getDescription());
+		System.out.println("Armor: " + army[4].getArmor());
+		System.out.println("Damage: "  + army[4].getDamage());
+	}
+}
+
+/*
+ The following three classes demonstrate how abstraction can be used to create a format for a class which can then
+ be instantiated by a subclass. They also demonstrate the use of delegation to perform a function.
+*/
+
+public abstract class Human {
+
+	private String description = "Unknown Human";
+	private int armorClass;
+	private int damage;
+	private AttackBehavior attackBehavior;
+	
+	public String getDescription() { return description; }
+	public abstract int getArmor();
+	public abstract int getDamage();
+	
+	public void performAttack() { attackBehavior.attack(); } //performAttack() delegates the attack behavior to the AttackBehavior object
+	public void setAttack( AttackBehavior ab ) { this.attackBehavior = ab; }
+}
+
+public class Soldier extends Human {
+	
+	public Soldier() {
+		this.description = "Soldier";
+		this.armorClass = 2;
+		this.damage = 2;
+		this.attackBehavior = new Swing();
+	}
+	
+	public int getArmor() { return this.armorClass; }
+	public int getDamage() { return this.damage; }
+}
+
+public class Ranger extends Human {
+	
+	public Ranger() {
+		this.description = "Ranger";
+		this.armorClass = 1;
+		this.damage = 3;
+		this.attackBehavior = new Shoot();
+	}
+	
+	public int getArmor() { return this.armorClass; }
+	public int getDamage() { return this.damage; }
+}
+
+/*
+ The following three classes demonstrate the internal functionality behind delegation
+*/
+
+public interface AttackBehavior {
+	public abstract void attack();
+}
+
+public class Swing implements AttackBehavior {
+	public void attack() {
+		System.out.println("I swing my sword!");
+	}
+}
+
+public class Shoot implements AttackBehavior {
+	public void attack() {
+		System.out.println("I shoot my bow!");
+	}
+}
+
+/*
+ The following three classes demonstrate the use of decorator objects
+*/
+
+public abstract class equipmentDecorator extends Human {
+	public abstract String getDescription();
+}
+
+public class Shield extends equipmentDecorator {
+	Human human;
+	
+	public Shield( Human h ) {
+		this.human = h;
+	}
+	
+	public int getArmor() { 
+		int finalArmor = 1;
+		
+		return finalArmor + human.getArmor();
+	}
+	
+	public int getDamage() {
+		int finalDamage = 0;
+		
+		return finalDamage + human.getDamage();
+	}
+	
+	public String getDescription() {
+		return this.human.getDescription + " + Shield";
+	}
+}
+
+public class Sword extends equipmentDecorator {
+	Human human;
+	
+	public Sword( Human h ) {
+		this.human = h;
+	}
+	
+	public int getArmor() {
+		int finalArmor = 0;
+		
+		return finalArmor + human.getArmor();
+	}
+	
+	public int getDamage() {
+		int finalDamage = 1;
+		
+		return finalDamage + human.getDamage();
+	}
+	
+	public String getDescription() {
+		return this.human.getDescription + " + Sword";
+	}
+}
+
+//////////////////////////////////////////////////////////
+// The following code holds examples of the following	//
+// programming concepts:								//
+//	1. Recursion										//
+//////////////////////////////////////////////////////////
+
+public class RecursionDemo {
+	
+	public void recursionMethod( int counter ) {
+		if( counter < 0 ) {
+			exit(0); //Exit if someone enters a number less than 0
+		}
+		
+		// Base Case
+		if( counter == 0 ) {
+			return;
+		} else {
+			System.out.println(counter + " ,");
+			recursionMethod(counter--);
+		}
+	}
+}
